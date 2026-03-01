@@ -1,11 +1,18 @@
+import { UnsupportedProviderError } from "../../errors/unsupported-provider.error";
 import { LLMProvider } from "../interfaces/llm.interface";
 import { GeminiProvider } from "../providers/gemini.provider";
 import { OpenAIProvider } from "../providers/openai.provider";
+import { LLMProviderType } from "../types/llm.types";
 
-export function createLLM(provider: "openai" | "gemini") : LLMProvider {
-    switch (provider) {
-        case "openai": return new OpenAIProvider();
-        case "gemini": return new GeminiProvider();
-        default: throw new Error("Unsupported provider");
+const providers: Record<LLMProviderType, new () => LLMProvider> = {
+    openai: OpenAIProvider,
+    gemini: GeminiProvider
+};
+
+export function createLLM(provider: LLMProviderType): LLMProvider {
+    const ProviderClass = providers[provider];
+    if (!ProviderClass) {
+        throw new UnsupportedProviderError(provider);
     }
-} 
+    return new ProviderClass();
+}
