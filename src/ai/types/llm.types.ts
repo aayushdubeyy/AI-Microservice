@@ -5,6 +5,8 @@ export interface LLMGenerateOptions {
     temperature?: number;
     maxTokens?: number;
     model?: string;
+    reasoningLevel?: LLMReasoningLevel;
+    showThinking?: boolean;
 }
 
 export interface LLMResponse {
@@ -12,3 +14,11 @@ export interface LLMResponse {
     provider: LLMProviderType;
     model: string;
 }
+
+export type LLMReasoningLevel =
+  | "none"
+  | "low"
+  | "medium"
+  | "high"
+  | "max"
+  | "dynamic";

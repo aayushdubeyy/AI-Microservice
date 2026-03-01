@@ -3,7 +3,7 @@ import { LLMGenerateOptions, LLMProviderType, LLMResponse } from "../types/llm.t
 
 export abstract class AbstractLLMProvider {
     protected abstract providerName: LLMProviderType;
-    protected abstract defaultModel: string;
+    protected abstract defaultModel: string;    
 
     protected abstract callModel(options: LLMGenerateOptions) : Promise<string>;
 
@@ -17,9 +17,7 @@ export abstract class AbstractLLMProvider {
             return this.buildResponse(text, model);
         }
         catch (error: any) {
-            throw new LLMError(
-                error?.message || `Failed to generate text with ${this.providerName}`
-            );
+            throw new LLMError(error.message || `Failed to generate text with ${this.providerName}`);
         }
     }
 
