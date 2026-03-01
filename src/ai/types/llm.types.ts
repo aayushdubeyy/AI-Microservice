@@ -1,3 +1,5 @@
+import { ZodTypeAny } from "zod/v3";
+
 export type LLMProviderType = "openai" | "gemini";
 
 export interface LLMGenerateOptions {
@@ -9,8 +11,12 @@ export interface LLMGenerateOptions {
     showThinking?: boolean;
 }
 
-export interface LLMResponse {
-    text: string;
+export interface LLMJsonGenerateOptions extends LLMGenerateOptions {
+    zodSchema: ZodTypeAny;
+}
+
+export interface LLMResponse<T = any> {
+    text: string | object | T;
     provider: LLMProviderType;
     model: string;
 }

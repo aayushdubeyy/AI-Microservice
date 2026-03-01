@@ -1,6 +1,6 @@
 import { logger } from "../../utils/logger";
 import { createLLM } from "../factory/llm.factory";
-import { LLMGenerateOptions, LLMProviderType } from "../types/llm.types";
+import { LLMGenerateOptions, LLMJsonGenerateOptions, LLMProviderType } from "../types/llm.types";
 
 export class LLMService {
     private provider;
@@ -21,5 +21,9 @@ export class LLMService {
             model: response.model,
         });
         return response;
+    }
+
+    async generateJSON<T>(options: LLMJsonGenerateOptions) {
+        return this.provider.generateJson(options);
     }
 }

@@ -1,6 +1,7 @@
 import OpenAI from "openai";
+import { zodTextFormat } from "openai/helpers/zod";
 import { AbstractLLMProvider } from "./abstract-llm.provider";
-import { LLMGenerateOptions } from "../types/llm.types";
+import { LLMGenerateOptions, LLMJsonGenerateOptions } from "../types/llm.types";
 
 export class OpenAIProvider extends AbstractLLMProvider {
     protected providerName = "openai" as const;
@@ -39,5 +40,22 @@ export class OpenAIProvider extends AbstractLLMProvider {
             case "max": return "xhigh";
             default: return "low";
         }
+    }
+
+    protected async callJsonModel(options: LLMJsonGenerateOptions) {
+        const zodSchema = options.zodSchema;
+        if (!zodSchema) {
+            throw new Error("Zod schema is required for JSON response");
+        }
+
+        const response = await this.client.responses.parse({
+            model: options.model!,
+            input: options.prompt,
+            text: {
+                format: zodTextFormat(zodSchema, "event"),
+            }
+        });
+        
+        return response.output_parsed;
     }
 }

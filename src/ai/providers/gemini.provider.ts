@@ -1,6 +1,7 @@
 import { GoogleGenAI, ThinkingConfig, ThinkingLevel } from "@google/genai";
 import { AbstractLLMProvider } from "./abstract-llm.provider";
-import { LLMGenerateOptions } from "../types/llm.types";
+import { LLMGenerateOptions, LLMJsonGenerateOptions } from "../types/llm.types";
+import { zodToJsonSchema } from "zod-to-json-schema";
 
 export class GeminiProvider extends AbstractLLMProvider {
     protected providerName = "gemini" as const;
@@ -41,4 +42,21 @@ export class GeminiProvider extends AbstractLLMProvider {
             default: return { thinkingLevel: ThinkingLevel.LOW };
         }
     }    
+
+    protected async callJsonModel(options: LLMJsonGenerateOptions) {
+            const zodSchema = options.zodSchema;
+            if (!zodSchema) {
+                throw new Error("Zod schema is required for JSON response");
+            }
+    
+            const response = await this.client.models.generateContent({
+                model: options.model!,
+                contents: options.prompt,
+                config: {
+                    responseMimeType: "application/json",
+                    responseJsonSchema: zodToJsonSchema(zodSchema),
+                }
+            });
+            return zodSchema.parse(JSON.parse(response.text || "{}"));
+        }
 }
